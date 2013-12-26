@@ -1,13 +1,12 @@
 #!/bin/bash
 
-fil="$HOME/dhcp.conf"
 tmp=$(mktemp /tmp/dhcp.XXX)
+conf="$HOME/dhcp.conf"
 
 settings(){
 	dialog --backtitle "DHCP.conf" \
 	--title "$1 settings" \
-	--inputbox "Enter your $1 settings" 15 60 2> $tmp
-	
+	--inputbox "Enter your $1 settings:" 15 60 2> $tmp
 	setting=$(<$tmp)
 	
 	case $1 in
@@ -27,7 +26,7 @@ for i in subnet netmask range_{start,end} DNS routers default_lease_time max lea
 	settings $i
 done
 
-cat << EOF > $fil
+cat << EOF > $conf
 subnet $subnet netmask $netmask{
 range $range_start $range_end;
 option domain-name-servers $DNS;
@@ -38,6 +37,5 @@ max-lease-time $max_lease_time;
 }
 EOF
 
-dialog --textbox $fil 15 60
-
+dialog --textbox $conf 15 60
 exit 0
