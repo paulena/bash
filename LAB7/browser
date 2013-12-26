@@ -1,0 +1,38 @@
+#!/bin/bash
+
+#tmp=$(mktemp /tmp/menu.XXX) skapar en ny fil i tmp mappen. 
+#2> $tmp det är i stderr som man lägger informationen om vilken browser man har valt
+#menu=$(<$tmp) hämtar informationen om den browser man har valt.
+#command -v firefox  visar sökvägen firefox. (type firefox) gör samma sak.§ 
+#${1^} gör att första bokstaven i ordet blir stort
+
+tmp=$(mktemp /tmp/menu.XXX)
+
+browserchk(){
+	command -v $1 &> /dev/null
+	if [ $? -ne 0 ]; then
+		dialog --title "web browser" \
+		--msgbox "It seems that you don't have ${1^} installed." 10 30
+		exit 1
+	else
+		${1} &> /dev/null
+	fi
+}					   
+
+dialog --title "Web browser" \
+--menu "Please choose a web browser:" 15 30 3 \
+1 Firefox \
+2 Chrome \
+3 IceWeasel \
+2> $tmp
+
+selected=$(<$tmp)
+
+case $selected in
+	1) browserchk firefox	;;
+	2) browserchk chrome	;;
+	3) browserchk iceweasel	;;
+esac
+
+rm $tmp
+exit 0
